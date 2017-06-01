@@ -8,5 +8,8 @@ variable "teams" {
     {
       name = "Team Two"
     },
+    {
+      name = "Team Three"
+    },
   ]
 }

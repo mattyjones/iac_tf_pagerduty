@@ -11,13 +11,13 @@ variable "users" {
     {
       name  = "User Two"
       email = "user.two@gmail.com"
-      teams = ["Team Two"]
+      teams = ["Team Two", "Team Three"]
       role  = "limited_user"
     },
     {
       name  = "User Three"
       email = "user.three@gmail.com"
-      teams = ["Team One", "Team Two"]
+      teams = ["Team One", "Team Two", "Team Three"]
       role  = "limited_user"
     },
   ]
