@@ -1,2 +1,5 @@
 - add phone numbers and sms numbers via tf
 - document clearly the necessary bits
+- ui
+- statefile in S3
+- container for executing the commands
