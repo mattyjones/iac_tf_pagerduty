@@ -10,7 +10,7 @@
 
  **All changes should be made in `users.tf` following best practices**
 
- ```
+ ```json
  resource "pagerduty_user" "User_Four" {
   name  = "User Four"
   email = "user.four@gmail.com"
@@ -27,7 +27,7 @@ By using the `id` that is outputed from the *pagerduty_team* resource, terraform
 
  **All changes should be made in `teams.tf` following best practices**
 
- ```
+ ```json
  resource "pagerduty_team" "Team_Two" {
   name        = "Team Two"
 }
@@ -42,3 +42,46 @@ Copy the above snippet into the teams file, changing the values as needed. The t
 - You should not reference by `count.index` across multiple resources as consistency cannot be guaranteed, use `self.foo` where possible
 
 [1]: https://support.pagerduty.com/hc/en-us/articles/202829310-Generating-an-API-Key
+
+## Troubleshooting
+
+### If a managed team/user has been deleted using the UI
+
+If an entity has been deleted via the ui, when you run terraform plan next you will get a 404 as the endpoint for that entity does not exist. 
+
+`* pagerduty_user.User_One: pagerduty_user.User_One: Failed call API endpoint. HTTP response code: 404. Error: &{2100 Not Found <nil>}`
+
+In order to fix this **DO NOT** add the entity back into the ui. While this may work, there could be unforseen consequences. The proper way to fix an entity deletion issue is so edit the statefile and remove that entity from it. In the following snippet we have a user state, you would search for the user, email is the easiest way most likely, and remove their definition. Currently using `terraform taint` is not support by the pagerduty provider but it would be the correct way to perform this action going forward.
+
+```json
+"pagerduty_user.User_One": {
+                    "type": "pagerduty_user",
+                    "depends_on": [
+                        "pagerduty_team.Team_Two"
+                    ],
+                    "primary": {
+                        "id": "PZ7VH1A",
+                        "attributes": {
+                            "avatar_url": "https://secure.gravatar.com/avatar/12bb8d6fee33b19874110c2e9ca5d58c.png?d=mm\u0026r=PG",
+                            "color": "green",
+                            "description": "Managed by Terraform",
+                            "email": "user.one@gmail.com",
+                            "id": "PZ7VH1A",
+                            "job_title": "",
+                            "name": "User One",
+                            "role": "limited_user",
+                            "teams.#": "1",
+                            "teams.4179140303": "PJFKBAG",
+                            "time_zone": ""
+                        },
+                        "meta": {},
+                        "tainted": false
+                    },
+                    "deposed": [],
+                    "provider": ""
+                },
+```
+
+## If a managed user has been modified using the UI
+
+If a user has had privileges or other attributes changed via the ui, just rerun terraform and it will correct the issue and bring that user back to the state defined in the resource. 
