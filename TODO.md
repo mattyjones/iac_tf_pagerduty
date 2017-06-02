@@ -1,0 +1,2 @@
+- add phone numbers and sms numbers via tf
+- document clearly the necessary bits
